@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>YouTube Transcriber</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+        }
+
+        input,
+        select,
+        button,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            white-space: pre-wrap;
+            border: 1px solid #ccc;
+            height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Transcribe YouTube Video</h2>
+
+    <label for="modelSelect">Choose Ollama Model <span style="color:red;">*</span></label>
+    <select id="modelSelect">
+        <option disabled selected>Loading...</option>
+    </select>
+
+    <label for="urlInput">YouTube URL <span style="color:red;">*</span></label>
+    <input type="text" id="urlInput" placeholder="https://www.youtube.com/watch?v=..." />
+
+    <label for="promptInput">Custom Prompt (optional)</label>
+    <textarea id="promptInput" placeholder="Optional custom prompt..."></textarea>
+
+    <button id="submitBtn">Start Transcription</button>
+
+    <h3>Transcription Output:</h3>
+    <pre id="output"></pre>
+
+    <script>
+        const modelSelect = document.getElementById("modelSelect");
+        const urlInput = document.getElementById("urlInput");
+        const promptInput = document.getElementById("promptInput");
+        const submitBtn = document.getElementById("submitBtn");
+        const output = document.getElementById("output");
+
+        // Load available models from local server
+        fetch("http://localhost:11434/tags")
+            .then(res => res.json())
+            .then(data => {
+                modelSelect.innerHTML = '<option disabled selected>Select a model</option>';
+                for (const model of data.models || []) {
+                    const option = document.createElement("option");
+                    option.value = model.name;
+                    option.textContent = model.name;
+                    modelSelect.appendChild(option);
+                }
+            })
+            .catch(() => {
+                modelSelect.innerHTML = "<option>Error loading models</option>";
+            });
+
+        // Form submit handler
+        submitBtn.addEventListener("click", () => {
+            const url = urlInput.value.trim();
+            const model = modelSelect.value;
+            const prompt = promptInput.value.trim();
+
+            // Validations
+            if (!url) {
+                alert("YouTube URL is required.");
+                return;
+            }
+
+            const urlRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//;
+            if (!urlRegex.test(url)) {
+                alert("Enter a valid YouTube URL.");
+                return;
+            }
+
+            if (!model || model === "Select a model") {
+                alert("Please select a model.");
+                return;
+            }
+
+            output.textContent = "Starting transcription...\n";
+
+            // Start SSE stream
+            const query = new URLSearchParams({ url, model });
+            if (prompt) query.append("prompt", prompt);
+
+            const eventSource = new EventSource(`http://localhost:11434/stream?${query.toString()}`);
+            eventSource.onmessage = (event) => {
+                output.textContent += event.data + "\n";
+                output.scrollTop = output.scrollHeight;
+            };
+            eventSource.onerror = () => {
+                output.textContent += "\n[Stream ended]";
+                eventSource.close();
+            };
+        });
+    </script>
+</body>
+
+</html>

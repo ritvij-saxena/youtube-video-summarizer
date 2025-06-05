@@ -1,0 +1,19 @@
+{
+    "manifest_version": 3,
+    "name": "YouTube Transcriber",
+    "version": "1.0",
+    "permissions": ["tabs"],
+    "action": {
+      "default_title": "Transcribe YouTube"
+    },
+    "background": {
+      "service_worker": "background.js"
+    },
+    "web_accessible_resources": [
+      {
+        "resources": ["ui.html"],
+        "matches": ["<all_urls>"]
+      }
+    ]
+  }
+  
