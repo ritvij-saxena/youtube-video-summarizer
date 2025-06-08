@@ -92,4 +92,14 @@ fi
 
 cd ..
 echo "Starting Youtube Summarizer Server..."
+echo "⏳ Waiting for server to start..."
 npm start
+sleep 2
+
+if curl -s http://localhost:8080/ping | grep -q "Youtube Summarizer Server works!"; then
+  echo "✅ Server is up and responding"
+else
+  echo "❌ Server did not respond correctly to /ping"
+  echo "Please check the logs and start the server manually."
+  exit 1
+fi
