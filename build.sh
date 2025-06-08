@@ -103,3 +103,11 @@ else
   echo "Please check the logs and start the server manually."
   exit 1
 fi
+
+if curl -s http://localhost:11434/ | grep -q "Ollama is running"; then
+  echo "✅ Ollama Server is up and responding"
+else
+  echo "❌ Ollama Server did not respond correctly"
+  echo "Please check the logs and start the server manually."
+  exit 1
+fi 
