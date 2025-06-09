@@ -99,19 +99,6 @@
 
             output.textContent = "Starting transcription...\n";
 
-            // Start SSE stream
-            const query = new URLSearchParams({ url, model });
-            if (prompt) query.append("prompt", prompt);
-
-            const eventSource = new EventSource(`http://localhost:11434/stream?${query.toString()}`);
-            eventSource.onmessage = (event) => {
-                output.textContent += event.data + "\n";
-                output.scrollTop = output.scrollHeight;
-            };
-            eventSource.onerror = () => {
-                output.textContent += "\n[Stream ended]";
-                eventSource.close();
-            };
         });
     </script>
 </body>
