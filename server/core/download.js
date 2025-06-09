@@ -1,7 +1,6 @@
 const { spawn } = require("child_process");
 const fs = require("fs");
 const path = require("path");
-const isValidYouTubeUrl = require("../utils/validate_youtube_url");
 
 const ensureOutputDir = () => {
   const dir = path.join(__dirname, "..", "..", "output");
@@ -11,10 +10,6 @@ const ensureOutputDir = () => {
 
 function downloadAudio(url, filename = "audio.mp3") {
   return new Promise((resolve, reject) => {
-    if (!isValidYouTubeUrl(url)) {
-      return reject(new Error("Invalid YouTube URL"));
-    }
-
     const outputDir = ensureOutputDir();
     const outputPath = path.join(outputDir, filename);
 

@@ -5,7 +5,6 @@ const path = require("path");
 function convertToWav(inputPath, outputFilename = "audio.wav") {
   return new Promise((resolve, reject) => {
     const outputDir = path.join(__dirname, "..", "..", "output");
-    if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
     const outputPath = path.join(outputDir, outputFilename);
 
