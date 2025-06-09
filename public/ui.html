@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>YouTube Transcriber</title>
     <style>
         body {
@@ -29,27 +29,34 @@
             height: 200px;
             overflow-y: auto;
         }
+
+        .error {
+            color: red;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 
 <body>
-    <h2>Transcribe YouTube Video</h2>
+    <h2>YouTube Video Summarizer</h2>
 
-    <label for="modelSelect">Choose Ollama Model <span style="color:red;">*</span></label>
+    <label for="modelSelect">Ollama Model <span style="color: red;">*</span></label>
     <select id="modelSelect">
-        <option disabled selected>Loading...</option>
+        <option disabled selected>Loading models...</option>
     </select>
+    <div id="modelError" class="error"></div>
 
-    <label for="urlInput">YouTube URL <span style="color:red;">*</span></label>
+    <label for="urlInput">YouTube URL <span style="color: red;">*</span></label>
     <input type="text" id="urlInput" placeholder="https://www.youtube.com/watch?v=..." />
+    <div id="urlError" class="error"></div>
 
     <label for="promptInput">Custom Prompt (optional)</label>
     <textarea id="promptInput" placeholder="Optional custom prompt..."></textarea>
 
     <button id="submitBtn">Start Transcription</button>
 
-    <h3>Transcription Output:</h3>
-    <pre id="output"></pre>
+    <h3>Summary Output:</h3>
+    <pre id="output">No output yet.</pre>
 
     <script>
         const modelSelect = document.getElementById("modelSelect");
@@ -57,8 +64,10 @@
         const promptInput = document.getElementById("promptInput");
         const submitBtn = document.getElementById("submitBtn");
         const output = document.getElementById("output");
+        const modelError = document.getElementById("modelError");
+        const urlError = document.getElementById("urlError");
 
-        // Load available models from local server
+        // Load available Ollama models
         fetch("http://localhost:11434/tags")
             .then(res => res.json())
             .then(data => {
@@ -74,31 +83,58 @@
                 modelSelect.innerHTML = "<option>Error loading models</option>";
             });
 
-        // Form submit handler
         submitBtn.addEventListener("click", () => {
+            // Reset errors
+            modelError.textContent = "";
+            urlError.textContent = "";
+            output.textContent = "";
+
             const url = urlInput.value.trim();
             const model = modelSelect.value;
-            const prompt = promptInput.value.trim();
 
-            // Validations
+            // Validate YouTube URL
+            const urlRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]{11}/;
             if (!url) {
-                alert("YouTube URL is required.");
+                urlError.textContent = "YouTube URL is required.";
+                return;
+            } else if (!urlRegex.test(url)) {
+                urlError.textContent = "Please enter a valid YouTube URL.";
                 return;
             }
 
-            const urlRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//;
-            if (!urlRegex.test(url)) {
-                alert("Enter a valid YouTube URL.");
-                return;
-            }
-
+            // Validate model
             if (!model || model === "Select a model") {
-                alert("Please select a model.");
+                modelError.textContent = "Please select an Ollama model.";
                 return;
             }
 
-            output.textContent = "Starting transcription...\n";
+            // Disable button while processing
+            submitBtn.disabled = true;
+            output.textContent = "⏳ Starting transcription...\n";
 
+            const evtSource = new EventSource(`http://localhost:8080/summary?url=${encodeURIComponent(url)}&model=${model}`);
+
+            evtSource.onmessage = (event) => {
+                if (event.data === "[DONE]") {
+                    output.textContent += "\n✅ Done.\n";
+                    submitBtn.disabled = false;
+                    evtSource.close();
+                } else if (event.data.startsWith("ERROR:")) {
+                    output.textContent += `\n❌ ${event.data}\n`;
+                    submitBtn.disabled = false;
+                    evtSource.close();
+                } else {
+                    output.textContent += event.data;
+                }
+
+                output.scrollTop = output.scrollHeight;
+            };
+
+            evtSource.onerror = (err) => {
+                output.textContent += "\n❌ Error connecting to server.\n";
+                submitBtn.disabled = false;
+                evtSource.close();
+            };
         });
     </script>
 </body>
