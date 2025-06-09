@@ -1,19 +1,22 @@
 {
-    "manifest_version": 3,
-    "name": "YouTube Transcriber",
-    "version": "1.0",
-    "permissions": ["tabs"],
-    "action": {
-      "default_title": "Transcribe YouTube"
-    },
-    "background": {
-      "service_worker": "background.js"
-    },
-    "web_accessible_resources": [
-      {
-        "resources": ["public/ui.html"],
-        "matches": ["<all_urls>"]
-      }
-    ]
+  "manifest_version": 3,
+  "name": "YouTube Transcriber",
+  "version": "1.0",
+  "description": "Chrome extension to summarize YouTube videos with Whisper and Ollama.",
+  "permissions": ["tabs"],
+  "action": {
+    "default_title": "Transcribe YouTube"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["public/ui.html", "public/popup.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
   }
-  
+}
