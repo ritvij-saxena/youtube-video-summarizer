@@ -1,6 +1,9 @@
 const express = require("express");
+const cors = require("cors");
+
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 const isValidYouTubeUrl = require("./utils/validate_youtube_url");
 const downloadAudio = require("./core/download");
@@ -13,6 +16,19 @@ app.get("/ping", (req, res) => {
   res.send("Youtube Summarizer Server works!");
 });
 
+// tags
+app.get("/tags", async (req, res) => {
+  try {
+    const response = await fetch("http://localhost:11434/api/tags");
+    const data = await response.json();
+    res.json(data);
+  } catch (err) {
+    console.error("Error proxying to Ollama:", err);
+    res.status(500).json({ error: "Failed to connect to Ollama" });
+  }
+});
+
+// summary
 app.post("/summary", async (req, res) => {
   const url = req.query.url;
   const model = req.query.model;
@@ -35,6 +51,15 @@ app.post("/summary", async (req, res) => {
   res.setHeader("Connection", "keep-alive");
   res.flushHeaders();
 
+  const keepAlive = setInterval(() => {
+    res.write(": keep-alive\n\n");
+  }, 15000);
+
+  req.on("close", () => {
+    console.log("Client disconnected.");
+    clearInterval(keepAlive);
+  });
+
   try {
     const mp3Path = await downloadAudio(url);
     const wavPath = await convertToWav(mp3Path);
@@ -44,10 +69,12 @@ app.post("/summary", async (req, res) => {
       res.write(`data: ${chunk}\n\n`);
     });
 
+    clearInterval(keepAlive);
     res.write("data: [DONE]\n\n");
     res.end();
   } catch (err) {
     console.error("Error in /summary:", err);
+    clearInterval(keepAlive);
     res.write(`data: ERROR: ${err.message}\n\n`);
     res.end();
   }

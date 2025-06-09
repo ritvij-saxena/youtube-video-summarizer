@@ -8,8 +8,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const urlError = document.getElementById("urlError");
 
   // Load available Ollama models
-  fetch("http://localhost:11434/tags")
-    .then((res) => res.json())
+  fetch("http://localhost:8080/tags")
+    .then((res) => {
+      if (!res.ok) throw new Error("Failed to fetch model tags");
+      return res.json();
+    })
     .then((data) => {
       modelSelect.innerHTML =
         "<option disabled selected>Select a model</option>";
@@ -20,7 +23,8 @@ document.addEventListener("DOMContentLoaded", () => {
         modelSelect.appendChild(option);
       }
     })
-    .catch(() => {
+    .catch((err) => {
+      console.error("Error loading models:", err);
       modelSelect.innerHTML = "<option>Error loading models</option>";
     });
 

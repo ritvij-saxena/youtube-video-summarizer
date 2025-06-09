@@ -3,7 +3,8 @@
   "name": "YouTube Transcriber",
   "version": "1.0",
   "description": "Chrome extension to summarize YouTube videos",
-  "permissions": ["tabs"],
+  "permissions": ["tabs", "scripting", "activeTab"],
+  "host_permissions": ["http://localhost:8080/"],
   "action": {
     "default_title": "Transcribe YouTube"
   },
