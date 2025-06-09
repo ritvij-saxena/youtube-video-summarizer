@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "YouTube Transcriber",
   "version": "1.0",
-  "description": "Chrome extension to summarize YouTube videos with Whisper and Ollama.",
+  "description": "Chrome extension to summarize YouTube videos",
   "permissions": ["tabs"],
   "action": {
     "default_title": "Transcribe YouTube"
