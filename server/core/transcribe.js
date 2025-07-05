@@ -28,17 +28,19 @@ function transcribeAudio(inputPath, outputFilename = "transcript.json") {
 
     whisper.on("close", (code) => {
       if (code === 0) {
-        console.log("✅ whisper.cpp transcription complete.");
+        console.log("whisper.cpp transcription complete.");
 
         try {
           const result = fs.readFileSync(outputPath, "utf-8");
           const json = JSON.parse(result);
           resolve(json);
         } catch (err) {
-          reject(new Error("❌ Failed to read or parse JSON transcription."));
+          reject(
+            new Error(`Failed to read or parse JSON transcription. err=${err}`)
+          );
         }
       } else {
-        reject(new Error(`❌ whisper exited with code ${code}`));
+        reject(new Error(`whisper exited with code ${code}`));
       }
     });
   });

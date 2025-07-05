@@ -45,7 +45,8 @@ function summarizeTranscript(transcriptJSON, model) {
               process.stdout.write(json.response || "");
             }
           } catch (err) {
-            console.error("❌ Failed to parse chunk from Ollama:", chunk);
+            console.error("Failed to parse chunk from Ollama:", chunk);
+            reject(err);
           }
         });
 

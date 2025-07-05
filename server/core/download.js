@@ -17,6 +17,8 @@ function downloadAudio(url, filename = "audio.mp3") {
       "-x",
       "--audio-format",
       "mp3",
+      "--ffmpeg-location",
+      path.resolve("./tools/bin"),
       "-o",
       outputPath,
       url,
@@ -35,6 +37,7 @@ function downloadAudio(url, filename = "audio.mp3") {
     ytdlp.on("close", (code) => {
       if (code === 0) {
         console.log("yt-dlp finished downloading.");
+        console.log(`Download Completed: ${outputPath}`);
         resolve(outputPath);
       } else {
         reject(new Error(`yt-dlp exited with code ${code}`));

@@ -29,8 +29,9 @@ app.get("/tags", async (req, res) => {
 });
 
 // summary
-app.post("/summary", async (req, res) => {
+app.get("/summary", async (req, res) => {
   const url = req.query.url;
+  console.log("In Summary");
   const model = req.query.model;
 
   if (!url) {
@@ -61,8 +62,12 @@ app.post("/summary", async (req, res) => {
   });
 
   try {
+    console.log("Fetching Audio");
     const mp3Path = await downloadAudio(url);
+    console.log(`Audio Path: ${mp3path}`);
+    console.log("To WAV Audio");
     const wavPath = await convertToWav(mp3Path);
+    console.log("Staring transcription");
     const transcriptJSON = await transcribeAudio(wavPath);
 
     await summarizeTranscript(transcriptJSON, model, (chunk) => {

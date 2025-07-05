@@ -35,12 +35,13 @@ fi
 
 echo "🔧 Building ffmpeg (this might take a few minutes)..."
 cd ffmpeg
-./configure --prefix="$(pwd)/build" --disable-debug --disable-doc --disable-ffplay --disable-ffprobe
+./configure --prefix="$(pwd)/build" --disable-debug --disable-doc --disable-ffplay
 make -j$(nproc)
 make install
 cd ..
 
 cp ffmpeg/build/bin/ffmpeg bin/ffmpeg
+cp ffmpeg/build/bin/ffprobe bin/ffprobe
 echo "ffmpeg binary copied to bin/ffmpeg"
 
 # ----------------------------------------
@@ -80,8 +81,8 @@ echo "Final binaries in bin/:"
 ls -lh bin/
 
 BINARY_COUNT=$(ls bin/ | wc -l)
-if [ "$BINARY_COUNT" -ne 3 ]; then
-  echo "❌ Error: Expected 3 binaries (ffmpeg, whisper_native, yt-dlp), but found $BINARY_COUNT."
+if [ "$BINARY_COUNT" -ne 4 ]; then
+  echo "❌ Error: Expected 4 binaries (ffmpeg, ffprobe, whisper_native, yt-dlp), but found $BINARY_COUNT."
   echo "Please check build steps manually."
   exit 1
 fi
