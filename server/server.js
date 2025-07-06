@@ -1,5 +1,7 @@
 const express = require("express");
 const cors = require("cors");
+const fs = require("fs");
+const path = require("path");
 
 const app = express();
 app.use(express.json());
@@ -62,6 +64,19 @@ app.get("/summary", async (req, res) => {
   });
 
   try {
+    const outputDir = path.join(__dirname, "../output");
+    fs.readdir(outputDir, (err, files) => {
+      if (err) {
+        console.error("Failed to read output dir", err);
+      } else {
+        for (const file of files) {
+          fs.unlink(path.join(outputDir, file), (err) => {
+            if (err) console.error(`Failed to delete ${file}`, err);
+          });
+        }
+      }
+    });
+
     console.log("Fetching Audio");
     const mp3Path = await downloadAudio(url);
     console.log(mp3Path);

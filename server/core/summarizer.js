@@ -4,9 +4,11 @@ const http = require("http");
  * Sends transcription segments to Ollama and streams the summary.
  * @param {Object} transcriptJSON - The parsed JSON from whisper.cpp
  * @param {string} model - The Ollama model to use (e.g., "mistral")
+ * @param {function} onData - Callback to stream data to client
  * @returns {Promise<void>}
  */
-function summarizeTranscript(transcriptJSON, model) {
+
+function summarizeTranscript(transcriptJSON, model, onData) {
   return new Promise((resolve, reject) => {
     let segments = transcriptJSON.transcription;
     if (!Array.isArray(segments)) {
@@ -15,8 +17,12 @@ function summarizeTranscript(transcriptJSON, model) {
 
     const prompt = `Summarize the following YouTube video transcript. Each line contains start and end timestamps:\n\n${segments
       .map((s) => {
-        const from = s.timestamps?.from || s.start?.toFixed(2) + "s" || "?";
-        const to = s.timestamps?.to || s.end?.toFixed(2) + "s" || "?";
+        const from =
+          s.timestamps?.from ||
+          (s.start !== undefined ? `${s.start.toFixed(2)}s` : "?");
+        const to =
+          s.timestamps?.to ||
+          (s.end !== undefined ? `${s.end.toFixed(2)}s` : "?");
         return `[${from} - ${to}] ${s.text}`;
       })
       .join("\n")}`;
@@ -46,15 +52,25 @@ function summarizeTranscript(transcriptJSON, model) {
         res.setEncoding("utf8");
         res.on("data", (chunk) => {
           try {
-            const lines = chunk
-              .split("\n")
-              .filter((l) => l.trim() && !l.startsWith("data: done"));
+            const lines = chunk.split("\n").filter((l) => l.trim());
+
             for (const line of lines) {
-              const json = JSON.parse(line.replace(/^data:\s*/, ""));
-              process.stdout.write(json.response || "");
+              const cleanLine = line.replace(/^data:\s*/, "");
+              const json = JSON.parse(cleanLine);
+
+              if (json.response) {
+                const text = json.response;
+                process.stdout.write(text);
+                onData(text);
+              }
+
+              if (json.done) {
+                console.log("\nOllama stream finished");
+              }
             }
           } catch (err) {
             console.error("Failed to parse chunk from Ollama:", chunk);
+            onData(`ERROR: ${err.message}`);
             reject(err);
           }
         });
@@ -66,7 +82,10 @@ function summarizeTranscript(transcriptJSON, model) {
       }
     );
 
-    req.on("error", reject);
+    req.on("error", (err) => {
+      reject(err);
+    });
+
     req.write(payload);
     req.end();
   });
