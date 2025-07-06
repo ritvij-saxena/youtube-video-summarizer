@@ -36,6 +36,15 @@ fi
 
 echo "Building libmp3lame..."
 cd lame-3.100
+
+# Known issue of libmp3lame build on macOS ARM64 (Apple Silicon)
+# 1) lame_init_old is declared in the symbol export list (libmp3lame.sym), 
+# but the actual function was removed in modern LAME sources.
+# 2) The build system tries to export a symbol that no longer exists → linker error.
+# Fix: We can clean the symbol list of lame_init_old before make runs.
+
+sed -i '' '/lame_init_old/d' include/libmp3lame.sym 
+
 ./configure --prefix="$(pwd)/build" --enable-nasm
 if [[ "$(uname)" == "Darwin" ]]; then
   make -j$(sysctl -n hw.ncpu)
