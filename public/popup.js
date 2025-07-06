@@ -72,11 +72,11 @@ document.addEventListener("DOMContentLoaded", () => {
         submitBtn.disabled = false;
         evtSource.close();
       } else if (event.data.startsWith("ERROR:")) {
-        output.textContent += `\n ${event.data}`;
+        output.textContent += `${event.data}`;
         submitBtn.disabled = false;
         evtSource.close();
       } else {
-        output.textContent += event.data + "\n";
+        output.textContent += `${event.data}`;
       }
       output.scrollTop = output.scrollHeight;
     };
