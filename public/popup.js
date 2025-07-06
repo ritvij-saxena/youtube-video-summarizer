@@ -57,6 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Start SSE connection
     submitBtn.disabled = true;
+    spinner.style.display = "block";
     output.textContent = "Summarization will be shown below...\n\n";
 
     const sseURL = `http://localhost:8080/summary?url=${encodeURIComponent(
@@ -70,13 +71,15 @@ document.addEventListener("DOMContentLoaded", () => {
       if (event.data === "[DONE]") {
         output.textContent += "\n\nSummarization Completed. ";
         submitBtn.disabled = false;
+        spinner.style.display = "none";
         evtSource.close();
       } else if (event.data.startsWith("ERROR:")) {
-        output.textContent += `${event.data}`;
+        output.textContent += `${JSON.parse(event.data)}`;
         submitBtn.disabled = false;
+        spinner.style.display = "none";
         evtSource.close();
       } else {
-        output.textContent += `${event.data}`;
+        output.textContent += `${JSON.parse(event.data)}`;
       }
       output.scrollTop = output.scrollHeight;
     };
@@ -84,6 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
     evtSource.onerror = () => {
       output.textContent += "\nConnection failed or server offline.";
       submitBtn.disabled = false;
+      spinner.style.display = "none";
       evtSource.close();
     };
   });

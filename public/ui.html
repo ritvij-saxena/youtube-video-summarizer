@@ -57,7 +57,21 @@
     <button id="submitBtn">Start Transcription</button>
 
     <h3>Summary Output:</h3>
-    <pre id="output">No output yet.</pre>
+    <div id="outputWrapper" style="position: relative;">
+        <pre id="output" style="min-height: 100px;"></pre>
+        <img id="spinner"
+         src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" alt="Loading..." 
+         style="
+            display: none; 
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 32px;
+            height: 32px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            " />
+    </div>
 
     <script src="popup.js"></script>
 </body>
