@@ -32,8 +32,8 @@ app.get("/tags", async (req, res) => {
 
 // Clean up
 
-async function cleaup() {
-  console.log("Cleanup ouput...");
+async function cleanup() {
+  console.log("Cleanup pre-existing ouputs");
   const outputDir = path.join(__dirname, "../output");
   fs.readdir(outputDir, (err, files) => {
     if (err) {
@@ -82,7 +82,7 @@ app.get("/summary", async (req, res) => {
   });
 
   try {
-    await cleaup();
+    await cleanup();
     console.log("Fetching Audio");
     const mp3Path = await downloadAudio(url);
     console.log(mp3Path);

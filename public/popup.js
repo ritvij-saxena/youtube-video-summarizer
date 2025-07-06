@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Start SSE connection
     submitBtn.disabled = true;
-    output.textContent = "Summarization will be shown below...\n";
+    output.textContent = "Summarization will be shown below...\n\n";
 
     const sseURL = `http://localhost:8080/summary?url=${encodeURIComponent(
       url
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     evtSource.onmessage = (event) => {
       if (event.data === "[DONE]") {
-        output.textContent += "\n Summarization Completed.";
+        output.textContent += "\n\nSummarization Completed. ";
         submitBtn.disabled = false;
         evtSource.close();
       } else if (event.data.startsWith("ERROR:")) {
