@@ -33,7 +33,7 @@ app.get("/tags", async (req, res) => {
 // Clean up
 
 async function cleanup() {
-  console.log("Cleanup pre-existing ouputs");
+  console.log("Cleaning up pre-existing outputs");
   const outputDir = path.join(__dirname, "../output");
   fs.readdir(outputDir, (err, files) => {
     if (err) {
@@ -53,6 +53,14 @@ app.get("/summary", async (req, res) => {
   const url = req.query.url;
   console.log("In Summary");
   const model = req.query.model;
+  const prompt = req.query.prompt || null;
+
+  console.log(`Custom Prompt: ${prompt}`);
+  /**
+   * TODO
+   * - Validate for inappropriate prompts
+   * - Pass to it summarizer. Stick to formatting.
+   */
 
   if (!url) {
     return res.status(400).json({ error: "Missing 'url' query parameter." });
@@ -108,5 +116,5 @@ app.get("/summary", async (req, res) => {
 
 // Start server
 app.listen(8080, () => {
-  console.log("Server running on http://localhost:8080");
+  console.log("Server running on http://localhost:8080.\nCtrl + C to end it");
 });

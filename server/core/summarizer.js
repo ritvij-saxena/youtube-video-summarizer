@@ -15,7 +15,7 @@ function summarizeTranscript(transcriptJSON, model, onChunk) {
     }
 
     const prompt = `Summarize the following YouTube video transcript. Return the summary as a JavaScript string literal — use proper escaped formatting (e.g., \\n, \\r, \\t) where appropriate, so that when printed in JavaScript it will look cleanly formatted for display. 
-    Respond ONLY with the JavaScript string literal — no explanation, no extra text. Each line contains start and end timestamps:\n\n${segments
+    Respond ONLY with the JavaScript string literal — no explanation, no extra text. Validate the formatting again before responding. We require consistent formatting. Each line contains start and end timestamps:\n\n${segments
       .map((s) => {
         const from =
           s.timestamps?.from ||
