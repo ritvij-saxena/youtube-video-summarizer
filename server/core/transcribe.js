@@ -2,7 +2,7 @@ const { spawn } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
-function transcribeAudio(inputPath, outputFilename) {
+function transcribeAudio(inputPath, outputFilename = "audio.wav.json") {
   return new Promise((resolve, reject) => {
     const outputDir = path.join(__dirname, "..", "..", "output");
     const outputPath = path.join(outputDir, outputFilename);
