@@ -32,7 +32,7 @@ function convertToWav(inputPath, outputFilename = "audio.wav") {
     ffmpeg.on("close", (code) => {
       if (code === 0) {
         console.log("ffmpeg conversion complete.");
-        print(`Audio Conversion Complete ${outputPath}`);
+        console.log(`Audio Conversion Complete ${outputPath}`);
         resolve(outputPath);
       } else {
         reject(new Error(`ffmpeg exited with code ${code}`));

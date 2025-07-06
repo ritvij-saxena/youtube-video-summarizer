@@ -2,7 +2,7 @@ const { spawn } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
-function transcribeAudio(inputPath, outputFilename = "transcript.json") {
+function transcribeAudio(inputPath, outputFilename) {
   return new Promise((resolve, reject) => {
     const outputDir = path.join(__dirname, "..", "..", "output");
     const outputPath = path.join(outputDir, outputFilename);
@@ -12,7 +12,7 @@ function transcribeAudio(inputPath, outputFilename = "transcript.json") {
       "--language",
       "en",
       "--model",
-      "base.en",
+      "tools/whisper.cpp/models/ggml-base.en.bin",
       "-oj", // output as JSON
     ]);
 

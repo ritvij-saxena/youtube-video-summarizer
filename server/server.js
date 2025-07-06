@@ -64,7 +64,7 @@ app.get("/summary", async (req, res) => {
   try {
     console.log("Fetching Audio");
     const mp3Path = await downloadAudio(url);
-    console.log("To WAV Audio");
+    console.log(mp3Path);
     const wavPath = await convertToWav(mp3Path);
     console.log("Staring transcription");
     const transcriptJSON = await transcribeAudio(wavPath);
