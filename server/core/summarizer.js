@@ -8,8 +8,17 @@ const http = require("http");
  */
 function summarizeTranscript(transcriptJSON, model) {
   return new Promise((resolve, reject) => {
-    const prompt = `Summarize the following YouTube video transcript. Each line contains start and end timestamps:\n\n${transcriptJSON.segments
-      .map((s) => `[${s.start.toFixed(2)}s - ${s.end.toFixed(2)}s] ${s.text}`)
+    let segments = transcriptJSON.transcription;
+    if (!Array.isArray(segments)) {
+      return reject(new Error("Invalid transcript JSON: segments not found"));
+    }
+
+    const prompt = `Summarize the following YouTube video transcript. Each line contains start and end timestamps:\n\n${segments
+      .map((s) => {
+        const from = s.timestamps?.from || s.start?.toFixed(2) + "s" || "?";
+        const to = s.timestamps?.to || s.end?.toFixed(2) + "s" || "?";
+        return `[${from} - ${to}] ${s.text}`;
+      })
       .join("\n")}`;
 
     const payload = JSON.stringify({
