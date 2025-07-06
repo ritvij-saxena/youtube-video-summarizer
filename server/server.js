@@ -30,6 +30,24 @@ app.get("/tags", async (req, res) => {
   }
 });
 
+// Clean up
+
+async function cleaup() {
+  console.log("Cleanup ouput...");
+  const outputDir = path.join(__dirname, "../output");
+  fs.readdir(outputDir, (err, files) => {
+    if (err) {
+      console.error("Failed to read output dir", err);
+    } else {
+      for (const file of files) {
+        fs.unlink(path.join(outputDir, file), (err) => {
+          if (err) console.error(`Failed to delete ${file}`, err);
+        });
+      }
+    }
+  });
+}
+
 // summary
 app.get("/summary", async (req, res) => {
   const url = req.query.url;
@@ -64,19 +82,7 @@ app.get("/summary", async (req, res) => {
   });
 
   try {
-    const outputDir = path.join(__dirname, "../output");
-    fs.readdir(outputDir, (err, files) => {
-      if (err) {
-        console.error("Failed to read output dir", err);
-      } else {
-        for (const file of files) {
-          fs.unlink(path.join(outputDir, file), (err) => {
-            if (err) console.error(`Failed to delete ${file}`, err);
-          });
-        }
-      }
-    });
-
+    await cleaup();
     console.log("Fetching Audio");
     const mp3Path = await downloadAudio(url);
     console.log(mp3Path);
@@ -90,6 +96,7 @@ app.get("/summary", async (req, res) => {
 
     clearInterval(keepAlive);
     res.write("data: [DONE]\n\n");
+    await cleanup();
     res.end();
   } catch (err) {
     console.error("Error in /summary:", err);
