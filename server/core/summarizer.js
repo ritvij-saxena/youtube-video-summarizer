@@ -14,8 +14,7 @@ function summarizeTranscript(transcriptJSON, model, onChunk) {
       return reject(new Error("Invalid transcript JSON: segments not found"));
     }
 
-    const prompt = `Summarize the following YouTube video transcript. Return the summary as a JavaScript string literal — use proper escaped formatting (e.g., \\n, \\r, \\t) where appropriate, so that when printed in JavaScript it will look cleanly formatted for display. 
-    Respond ONLY with the JavaScript string literal — no explanation, no extra text. Validate the formatting again before responding. We require consistent formatting. Each line contains start and end timestamps:\n\n${segments
+    const prompt = `Summarize the following YouTube video from the transcript provided. Please remove any timestamps from the reponse. We care more about the summary than the timestamps. Format the output using actual line breaks for readability (not escaped \\n or string literals). Ignore any background music if any from the transcript. Each line contains start and end timestamps:\n\n${segments
       .map((s) => {
         const from =
           s.timestamps?.from ||
@@ -66,7 +65,7 @@ function summarizeTranscript(transcriptJSON, model, onChunk) {
             try {
               const json = JSON.parse(line.replace(/^data:\s*/, ""));
               if (json.response) {
-                onChunk(JSON.stringify(json.response)); // send raw response to caller
+                onChunk(json.response); // send raw response to caller
                 process.stdout.write(json.response);
               }
             } catch (err) {
@@ -81,7 +80,7 @@ function summarizeTranscript(transcriptJSON, model, onChunk) {
             try {
               const json = JSON.parse(buffer.replace(/^data:\s*/, ""));
               if (json.response) {
-                onChunk(JSON.stringify(json.response));
+                onChunk(json.response);
                 process.stdout.write(json.response);
               }
             } catch (err) {

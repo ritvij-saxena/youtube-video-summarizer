@@ -27,7 +27,7 @@ Everything runs locally. No data is sent to external servers for transcription o
 1. **Clone this project**
 
    ```bash
-   git clone youtube-video-summarizer
+   git clone https://github.com/ritvij-saxena/youtube-video-summarizer.git
    cd youtube-video-summarizer
    ```
 

@@ -74,12 +74,12 @@ document.addEventListener("DOMContentLoaded", () => {
         spinner.style.display = "none";
         evtSource.close();
       } else if (event.data.startsWith("ERROR:")) {
-        output.textContent += `${JSON.parse(event.data)}`;
+        output.textContent += `${event.data}`;
         submitBtn.disabled = false;
         spinner.style.display = "none";
         evtSource.close();
       } else {
-        output.textContent += `${JSON.parse(event.data)}`;
+        output.textContent += `${event.data}`;
       }
       output.scrollTop = output.scrollHeight;
     };
