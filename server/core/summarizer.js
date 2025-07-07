@@ -14,7 +14,7 @@ function summarizeTranscript(transcriptJSON, model, onChunk) {
       return reject(new Error("Invalid transcript JSON: segments not found"));
     }
 
-    const prompt = `Summarize the following YouTube video from the transcript provided. Please remove any timestamps from the reponse. We care more about the summary than the timestamps. Format the output using actual line breaks for readability (not escaped \\n or string literals). Ignore any background music if any from the transcript. Each line contains start and end timestamps:\n\n${segments
+    const prompt = `Summarize the following YouTube video in a paragraph (justified formatting) from the transcript provided. Please remove any timestamps from the reponse. We care more about the summary than the timestamps. Format the output using actual line breaks for readability (not escaped \\n or string literals). Ignore any background music if any from the transcript. Each line contains start and end timestamps:\n\n${segments
       .map((s) => {
         const from =
           s.timestamps?.from ||
