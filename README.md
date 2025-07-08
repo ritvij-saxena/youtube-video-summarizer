@@ -5,6 +5,12 @@ I created this project because I was tired of clickbait YouTube videos. I would 
 You simply **copy the YouTube link**, **paste it into the extension**, **select a local model**, and **click "Start Summarizing"**. That’s it.
 
 ---
+## Requirements
+- Python 3.10+
+- yt-dlp, ffmpeg, ffprobe, whisper.cpp (`build.sh` will take care of it for you)
+- [Ollama](https://ollama.com/) installed & running locally. [API Documentation](https://ollama.readthedocs.io/en/api/#endpoints)
+  
+---
 
 ## How It Works
 
@@ -18,7 +24,7 @@ You simply **copy the YouTube link**, **paste it into the extension**, **select 
 
 3. The summary is streamed back to the extension in real time via **Server-Sent Events (SSE)** and displayed as it is generated.
 
-Everything runs locally. No data is sent to external servers for transcription or summarization unless you explicitly configure it otherwise.
+Everything runs locally. *No data is sent to external servers for transcription or summarization unless you explicitly configure it otherwise.*
 
 ---
 
