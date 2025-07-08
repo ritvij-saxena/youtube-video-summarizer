@@ -72,3 +72,11 @@ Everything runs locally. No data is sent to external servers for transcription o
 
 - This is a simple Chrome extension built on a whim with minimal effort. It scratches my itch for quickly understanding what a video is about without wasting time on clickbait.
 - I am happy to review any PRs that improve speed, efficiency, or features.
+
+--- 
+
+## Output
+
+https://github.com/user-attachments/assets/bae9bc60-ccd6-46e2-8852-d48eb4e4c35e
+
+
